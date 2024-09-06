@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+GIT_HOOKS=(
+    'applypatch-msg'
+    'commit-msg'
+    'fsmonitor-watchman'
+    'post-checkout'
+    'post-checkout-custom'
+    'post-commit'
+    'post-merge'
+    'post-update'
+    'pre-applypatch'
+    'pre-commit'
+    'pre-commit-custom'
+    'pre-push'
+    'pre-rebase'
+    'pre-receive'
+    'prepare-commit-msg'
+    'update'
+  )
+
+BOLD=$'\e[1m'
+GREEN=$'\e[32m'
+RED=$'\e[31m'
+RESET=$'\e[0m'
+HOOK_TYPE="$(basename -- "${BASH_SOURCE[0]}")"
+MATCHED_HOOK=false
+
+for HOOK in "${GIT_HOOKS[@]}"; do
+    if [ "$HOOK" == "$HOOK_TYPE" ]; then
+        MATCHED_HOOK=true;
+    fi
+done
+
+if [ "$MATCHED_HOOK" == false ]; then
+    printf "Uknown hook type: ${RED}%s${RESET}\n"
+    exit 1
+fi
+
+if [ ! -d "$(git rev-parse --git-dir)/hooks/$HOOK_TYPE.d" ]; then
+    printf "No such directory: ${RED}%s${RESET}\n"
+    exit 1
+fi
+
+for HOOK_SCRIPTS in "$(git rev-parse --git-dir)/hooks/$HOOK_TYPE.d/"*; do
+    printf "%s\n" \
+      "   ${BOLD}${GREEN}INFO${RESET}${BOLD}   | -----------------------BEGGINNG-OF-THE-HOOK------------------------" \
+      "   ${GREEN}INFO${RESET}${BOLD}   | Running hook $HOOK_SCRIPTS...${RESET}"
+
+    "$HOOK_SCRIPTS"
+done

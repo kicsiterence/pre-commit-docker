@@ -1,0 +1,44 @@
+#!/usr/bin/env sh
+
+separator(){
+    i=1
+    while [ "${i}" -le 79 ]; do
+      printf '_'
+      i=$((i + 1))
+    done
+    printf '\n'
+}
+
+run_pre_commit() {
+
+  PRE_COMMIT_FILE="$1"
+  BOLD="$(printf '\e[1m')"
+  GREEN="$(printf '\e[32m')"
+  RESET="$(printf '\e[0m')"
+
+  if [ -f "$PRE_COMMIT_FILE" ]; then
+
+      printf "%s\n\n" \
+          "   ${BOLD}${GREEN}INFO${RESET}${BOLD}   | Running pre-commit file $PRE_COMMIT_FILE...${RESET}"
+
+      # Run pre-commit based on stage
+      # $STAGE variable comes from ../00_run script
+      if [ "$STAGE" = "post-checkout" ]; then
+          pre-commit run --config="$PRE_COMMIT_FILE" --hook-stage=post-checkout --all-files || exit 1
+      elif [ "$STAGE" = "pre-commit" ]; then
+          pre-commit run --config="$PRE_COMMIT_FILE" --all-files || exit 1
+      else
+        printf "Nothing to run.\n"
+      fi
+
+  else
+    # Message
+    printf "%s file doesn't exist\n" "$PRE_COMMIT_FILE"
+    separator
+  fi
+}
+
+# Should be relative to the `git rev-parse --show-toplevel`
+run_pre_commit ".git/hooks/custom-pre-commit-config.yaml"
+run_pre_commit ".pre-commit-config.yaml"
+separator

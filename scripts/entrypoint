@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -e
+
+readonly USERBASE="run"
+readonly BASHPATH="/bin/bash"
+readonly HOMEPATH="/home"
+export PRE_COMMIT_COLOR=always
+WDIR="$(pwd)"
+
+function echo_error_and_exit {
+  echo -e "ERROR: " "$@" >&2
+  exit 1
+}
+
+# Make sure entrypoint is running as root
+if [[ $(id -u) -ne 0 ]]; then
+  echo_error_and_exit "Container must run as root. Use environment variable USERID to set user.\n"
+fi
+
+# Make sure USERID makes sense as UID:GID
+# it looks like the alpine distro limits UID and GID to 256000, but
+# could be more, so we accept any valid integers
+USERID=${USERID:-"0:0"}
+if [[ ! $USERID =~ ^[0-9]+:[0-9]+$ ]]; then
+  echo_error_and_exit "USERID environment variable invalid, format is userid:groupid.  Received: \"$USERID\""
+fi
+
+# Separate uid and gid
+uid=${USERID%%:*}
+gid=${USERID##*:}
+
+# If requested UID:GID is root, go ahead and run without other processing
+if [[ $CUSTOM == "true" ]] && [[ $USERID == "0:0" ]]; then
+  exec su-exec "$USERID" python3 .git/hooks/pre-commit
+elif [[ $USERID == "0:0" ]]; then
+  exec su-exec "$USERID" pre-commit
+fi
+
+# Make sure workdir and some files are readable/writable by the provided UID/GID
+# combo, otherwise will have errors when processing hooks
+if ! su-exec "$USERID" "$BASHPATH" -c "test -w $WDIR && test -r $WDIR"; then
+  echo_error_and_exit "uid:gid $USERID lacks permissions to $WDIR/"
+fi
+wdirgitindex="$WDIR/.git/index"
+if ! su-exec "$USERID" "$BASHPATH" -c "test -w $wdirgitindex && test -r $wdirgitindex"; then
+  echo_error_and_exit "uid:gid $USERID cannot write to $wdirgitindex"
+fi
+
+# Check if group by this GID already exists, if so get the name since adduser
+# only accepts names
+if groupinfo="$(getent group "$gid")"; then
+  groupname="${groupinfo%%:*}"
+else
+  # Create group in advance in case GID is different than UID
+  groupname="$USERBASE$gid"
+  if ! err="$(addgroup -g "$gid" "$groupname" 2>&1)"; then
+    echo_error_and_exit "failed to create gid \"$gid\" with name \"$groupname\"\ncommand output: \"$err\""
+  fi
+fi
+
+# Check if user by this UID already exists, if so get the name since id
+# only accepts names
+if userinfo="$(getent passwd "$uid")"; then
+  username="${userinfo%%:*}"
+else
+  username="$USERBASE$uid"
+  if ! err="$(adduser -h "$HOMEPATH$username" -s "$BASHPATH" -G "$groupname" -D -u "$uid" -k "$HOME" "$username" 2>&1)"; then
+    echo_error_and_exit "failed to create uid \"$uid\" with name \"$username\" and group \"$groupname\"\ncommand output: \"$err\""
+  fi
+fi
+
+# It's possible it was not in the group specified, add it
+if ! idgroupinfo="$(id -G "$username" 2>&1)"; then
+  echo_error_and_exit "failed to get group list for username \"$username\"\ncommand output: \"$idgroupinfo\""
+fi
+if [[ ! " $idgroupinfo " =~ [[:blank:]]${gid}[[:blank:]] ]]; then
+  if ! err="$(addgroup "$username" "$groupname" 2>&1)"; then
+    echo_error_and_exit "failed to add user \"$username\" to group \"$groupname\"\ncommand output: \"$err\""
+  fi
+fi
+
+# User and group of specified UID/GID should exist now, and user should be
+# a member of group, so execute pre-commit
+#
+# Pre-commit part
+if [[ -f ".git/hooks/custom-pre-commit-config.yaml" ]] && [[ $STAGE == "pre-commit" ]]; then
+  cp /pre-commit-custom .git/hooks/pre-commit-custom
+  su-exec "$USERID" "$BASHPATH" -c .git/hooks/pre-commit-custom >&2
+  rm .git/hooks/pre-commit-custom
+fi
+
+if [[ $SOURCE == "pre-commit" ]]; then
+  su-exec "$USERID" pre-commit
+fi
+
+# Post-checkout part
+if [[ -f ".git/hooks/custom-pre-commit-config.yaml" ]] && [[ $STAGE == "post-checkout" ]]; then
+  cp /post-checkout-custom .git/hooks/post-checkout-custom
+  su-exec "$USERID" "$BASHPATH" -c .git/hooks/post-checkout-custom >&2
+  rm .git/hooks/post-checkout-custom
+fi

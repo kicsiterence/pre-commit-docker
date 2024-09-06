@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+separator(){
+    i=1
+    while [ "${i}" -le 79 ]; do
+      printf '_'
+      i=$((i + 1))
+    done
+}
+
+PRECOMMIT_IMAGE="ghcr.io/kicsiterence/pre-commit-docker:latest"
+
+# Get the stage from file name
+PARENT_FILE=$(ps -o args= $PPID | cut -d " " -f 2)
+BASH_SCRIPT_FILENAME="${PARENT_FILE##*/}"
+STAGE="${BASH_SCRIPT_FILENAME%.*}"
+CACHE_DIR="$HOME/.pre-commit_docker_cache"
+
+BLUE="$(printf '\e[0;34m')"
+RES="$(printf '\e[0m')"
+
+printf "\n%sValidate cache directory...%s\n\n" "$BLUE" "$RES"
+
+mkdir -p "$CACHE_DIR"
+
+separator
+
+printf "\n%sPre-commit run...%s\n\n" "$BLUE" "$RES"
+
+docker run \
+  -e "USERID=$(id -u):$(id -g)" \
+  -e "STAGE=$STAGE" \
+  --rm -v ~/.ssh:/home/user/.ssh:ro \
+  --rm -v "$CACHE_DIR":/home/user/.cache:rw \
+  --rm -v ~/.gitconfig:/home/user/.gitconfig:ro \
+  -v "$(readlink -f "$PWD")":/lint \
+  -w /lint \
+  --pull=always \
+  "$PRECOMMIT_IMAGE" 1> /dev/null

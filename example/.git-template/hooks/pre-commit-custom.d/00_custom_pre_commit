@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+"$(git rev-parse --git-dir)/hooks/_common/01_custom"
