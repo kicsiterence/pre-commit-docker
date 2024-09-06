@@ -21,6 +21,7 @@
   - [Prerequisites](#prerequisites)
   - [Set up](#set-up)
     - [Additional notes](#additional-notes)
+    - [Docker image](#docker-image)
 - [Usage](#usage)
 - [In use](#in-use)
 - [Roadmap](#roadmap)
@@ -128,6 +129,14 @@ You can use multiple `pre-commit-config` file, to validate them against your cod
 run_pre_commit ".git/hooks/custom-pre-commit-config.yaml"
 run_pre_commit ".pre-commit-config.yaml"
 separator
+```
+
+#### Docker image
+
+You can pull docker image locally.
+
+```sh
+docker pull ghcr.io/kicsiterence/pre-commit-docker:latest
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
