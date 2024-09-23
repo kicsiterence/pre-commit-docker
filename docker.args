@@ -9,13 +9,13 @@ PRE_COMMIT_VERSION=v3.8.0
 CHECKOV_VERSION=3.2.254
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
-TERRAFORM_VERSION=v1.9.5
+TERRAFORM_VERSION=v1.9.6
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-docs/terraform-docs
-TERRAFORM_DOCS_VERSION=v0.18.0
+TERRAFORM_DOCS_VERSION=v0.19.0
 
 # renovate: datasource=github-releases depName=terragrunt packageName=gruntwork-io/terragrunt
-TERRAGRUNT_VERSION=v0.67.8
+TERRAGRUNT_VERSION=v0.67.10
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-linters/tflint
 TFLINT_VERSION=v0.53.0
@@ -24,4 +24,4 @@ TFLINT_VERSION=v0.53.0
 ANSIBLE_VERSION=10.4.0
 
 # renovate: datasource=pypi depName=ansible-lint
-ANSIBLE_LINT_VERSION=24.9.0
+ANSIBLE_LINT_VERSION=24.9.2
