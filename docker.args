@@ -3,7 +3,7 @@ TARGETOS=linux
 TARGETARCH=amd64
 
 # renovate: datasource=github-releases depName=pre-commit packageName=pre-commit/pre-commit
-PRE_COMMIT_VERSION=v4.0.0
+PRE_COMMIT_VERSION=v4.0.1
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
 CHECKOV_VERSION=3.2.257
@@ -21,7 +21,7 @@ TERRAGRUNT_VERSION=v0.67.16
 TFLINT_VERSION=v0.53.0
 
 # renovate: datasource=pypi depName=ansible
-ANSIBLE_VERSION=10.4.0
+ANSIBLE_VERSION=10.5.0
 
 # renovate: datasource=pypi depName=ansible-lint
 ANSIBLE_LINT_VERSION=24.9.2
