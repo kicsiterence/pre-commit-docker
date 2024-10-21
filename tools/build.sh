@@ -48,4 +48,4 @@ fi
 
 grep -v -e "^#" -e "^$" "$DOCKER_ARG" | \
   xargs printf -- '--build-arg %s\n' | \
-  xargs docker build --no-cache --pull -t "$IMAGE_NAME:$IMAGE_TAG" "$GIT_DIR"
+  xargs docker build --progress plain --no-cache --pull -t "$IMAGE_NAME:$IMAGE_TAG" "$GIT_DIR"
