@@ -10,16 +10,5 @@ readonly SCRIPT_DIR
 # https://github.com/bridgecrewio/checkov/pull/6045
 # gcc libffi-dev musl-dev required for compilation of cffi, until it contains musl aarch64
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
-apk add --no-cache \
-    gcc=~12 \
-    libffi-dev=~3 \
-    musl-dev=~1
-
 common::install::pip
-
-apk del \
-    gcc \
-    libffi-dev \
-    musl-dev
-
 common::version
