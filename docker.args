@@ -6,7 +6,7 @@ TARGETARCH=amd64
 PRE_COMMIT_VERSION=v4.0.1
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
-CHECKOV_VERSION=3.2.277
+CHECKOV_VERSION=3.2.286
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
 TERRAFORM_VERSION=v1.9.8
@@ -15,13 +15,13 @@ TERRAFORM_VERSION=v1.9.8
 TERRAFORM_DOCS_VERSION=v0.19.0
 
 # renovate: datasource=github-releases depName=terragrunt packageName=gruntwork-io/terragrunt
-TERRAGRUNT_VERSION=v0.68.7
+TERRAGRUNT_VERSION=v0.68.9
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-linters/tflint
-TFLINT_VERSION=v0.53.0
+TFLINT_VERSION=v0.54.0
 
 # renovate: datasource=pypi depName=ansible
-ANSIBLE_VERSION=10.5.0
+ANSIBLE_VERSION=10.6.0
 
 # renovate: datasource=pypi depName=ansible-lint
 ANSIBLE_LINT_VERSION=24.9.2
