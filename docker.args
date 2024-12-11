@@ -24,4 +24,4 @@ TFLINT_VERSION=v0.54.0
 ANSIBLE_VERSION=11.1.0
 
 # renovate: datasource=pypi depName=ansible-lint
-ANSIBLE_LINT_VERSION=24.10.0
+ANSIBLE_LINT_VERSION=24.12.0
