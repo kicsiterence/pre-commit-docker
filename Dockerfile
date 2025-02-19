@@ -18,7 +18,7 @@ ARG JQ_VERSION=1.6-r2
 # renovate: datasource=repology depnameprefix=alpine_3_17/libffi-dev versioning=loose
 ARG LIBFFI_DEV_VERSION=3.4.4-r0
 # renovate: datasource=repology depnameprefix=alpine_3_17/musl-dev versioning=loose
-ARG MUSL_DEV_VERSION=1.2.3-r5
+ARG MUSL_DEV_VERSION=1.2.3-r6
 # renovate: datasource=repology depnameprefix=alpine_3_17/openssh-client-default versioning=loose
 ARG OPENSSH_CLIENT_DEFAULT_VERSION=9.1_p1-r6
 # renovate: datasource=repology depnameprefix=alpine_3_17/perl versioning=loose
