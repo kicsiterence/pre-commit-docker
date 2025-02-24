@@ -38,7 +38,7 @@ jobs:
 
       - name: Build if docker related files have changed.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/build-push-action@v6.13.0
+        uses: docker/build-push-action@v6.14.0
         with:
           context: .
           build-args: |-
@@ -62,7 +62,7 @@ jobs:
 
       - name: Dive - check image for waste files.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: MaxymVlasov/dive-action@v1.3.0
+        uses: MaxymVlasov/dive-action@v1.4.0
         with:
           image: ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           config-file: ${{ github.workspace }}/tests/dive.yaml
