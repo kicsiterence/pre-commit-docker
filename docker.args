@@ -15,7 +15,7 @@ TERRAFORM_VERSION=v1.11.4
 TERRAFORM_DOCS_VERSION=v0.20.0
 
 # renovate: datasource=github-releases depName=terragrunt packageName=gruntwork-io/terragrunt
-TERRAGRUNT_VERSION=v0.78.1
+TERRAGRUNT_VERSION=v0.78.2
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-linters/tflint
 TFLINT_VERSION=v0.57.0
