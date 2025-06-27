@@ -5,36 +5,33 @@
 # in the stage where they are defined. This means that you can't use an
 # argument defined in the first stage in the second stage.
 #####################################
-# renovate: datasource=repology depnameprefix=alpine_3_17/bash versioning=loose
-ARG BASH_VERSION=5.2.15-r0
-# renovate: datasource=repology depnameprefix=alpine_3_17/curl versioning=loose
-ARG CURL_VERSION=8.9.0-r0
-# renovate: datasource=repology depnameprefix=alpine_3_17/gcc versioning=loose
-ARG GCC_VERSION=12.2.1_git20220924-r4
-# renovate: datasource=repology depnameprefix=alpine_3_17/git versioning=loose
-ARG GIT_VERSION=2.39.5-r0
-# renovate: datasource=repology depnameprefix=alpine_3_17/jq versioning=loose
-ARG JQ_VERSION=1.6-r2
-# renovate: datasource=repology depnameprefix=alpine_3_17/libffi-dev versioning=loose
-ARG LIBFFI_DEV_VERSION=3.4.4-r0
-# renovate: datasource=repology depnameprefix=alpine_3_17/musl-dev versioning=loose
-ARG MUSL_DEV_VERSION=1.2.3-r6
-# renovate: datasource=repology depnameprefix=alpine_3_17/openssh-client-default versioning=loose
-ARG OPENSSH_CLIENT_DEFAULT_VERSION=9.1_p1-r6
-# renovate: datasource=repology depnameprefix=alpine_3_17/perl versioning=loose
-ARG PERL_VERSION=5.36.2-r0
-# renovate: datasource=repology depnameprefix=alpine_3_17/su-exec versioning=loose
-ARG SU_EXEC_VERSION=0.2-r2
+# renovate: datasource=repology depnameprefix=alpine_3_22/bash versioning=loose
+ARG BASH_VERSION=5.2.37-r0
+# renovate: datasource=repology depnameprefix=alpine_3_22/curl versioning=loose
+ARG CURL_VERSION=8.14.1-r0
+# renovate: datasource=repology depnameprefix=alpine_3_22/gcc versioning=loose
+ARG GIT_VERSION=2.49.0-r0
+# renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
+ARG JQ_VERSION=1.8.0-r0
+# renovate: datasource=repology depnameprefix=alpine_3_22/openssh-client-default versioning=loose
+ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r7
+# renovate: datasource=repology depnameprefix=alpine_3_22/perl versioning=loose
+ARG PERL_VERSION=5.40.2-r0
+# renovate: datasource=repology depnameprefix=alpine_3_22/su-exec versioning=loose
+ARG SU_EXEC_VERSION=0.2-r3
+
+ARG PYTHON_VENV="/opt/python_venv"
 
 #####################################
 # Arguments
 #####################################
-ARG TAG=3.12.0-alpine3.17@sha256:fc34b07ec97a4f288bc17083d288374a803dd59800399c76b977016c9fe5b8f2
+ARG TAG=3.13.5-alpine3.22@sha256:9b4929a72599b6c6389ece4ecbf415fd1355129f22bb92bb137eea098f05e975
 FROM python:${TAG} AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
 ARG TOOLS_VERSION_FILE="tools_versions_info"
+ARG PYTHON_VENV
 
 #####################################
 # Installed tools version(s)
@@ -50,39 +47,36 @@ ARG ANSIBLE_LINT_VERSION=${ANSIBLE_LINT_VERSION:-false}
 
 ARG BASH_VERSION
 ARG CURL_VERSION
-ARG GCC_VERSION
 ARG JQ_VERSION
-ARG LIBFFI_DEV_VERSION
-ARG MUSL_DEV_VERSION
 
 # renovate: datasource=pypi depName=colorlog
-ARG COLORLOG_VERSION=6.8.0
+ARG COLORLOG_VERSION=6.9.0
 # renovate: datasource=pypi depName=pip
-ARG PIP_VERION=24.2
+ARG PIP_VERION=25.1.1
 # renovate: datasource=pypi depName=setuptools
-ARG SETUPTOOLS_VERSION=75.2.0
+ARG SETUPTOOLS_VERSION=80.9.0
 
 COPY scripts/assets/ /assets/
 
 WORKDIR /bin_dir
-ENV PATH="$PATH:/bin_dir"
+ENV PATH="$PATH:/bin_dir:${PYTHON_VENV}/bin"
 
 #####################################
 # Create builder image
 #####################################
+# Activate python venv
+RUN python3 -m venv ${PYTHON_VENV}
+
 # Upgrade packages for be able get latest Checkov (pip, setuptools)
 # Install colorlog for properly formatted log
 RUN apk add --no-cache \
-      bash=${BASH_VERSION} \
-      curl=${CURL_VERSION} \
-      gcc=${GCC_VERSION} \
-      jq=${JQ_VERSION} \
-      libffi-dev=${LIBFFI_DEV_VERSION} \
-      musl-dev=${MUSL_DEV_VERSION} &&\
-    python3 -m pip install --no-cache-dir --upgrade \
-      pip==${PIP_VERION} \
-      setuptools==${SETUPTOOLS_VERSION} \
-      colorlog==${COLORLOG_VERSION}
+  bash=${BASH_VERSION} \
+  curl=${CURL_VERSION} \
+  jq=${JQ_VERSION} && \
+  ${PYTHON_VENV}/bin/pip3 install --no-cache-dir --upgrade \
+  pip==${PIP_VERION} \
+  setuptools==${SETUPTOOLS_VERSION} \
+  colorlog==${COLORLOG_VERSION}
 
 RUN touch /.env &&\
   /assets/pre-commit.sh &&\
@@ -104,51 +98,47 @@ FROM python:${TAG}
 
 ARG BASH_VERSION
 ARG CURL_VERSION
-ARG GCC_VERSION
 ARG GIT_VERSION
 ARG JQ_VERSION
-ARG MUSL_DEV_VERSION
 ARG OPENSSH_CLIENT_DEFAULT_VERSION
 ARG PERL_VERSION
 ARG SU_EXEC_VERSION
+ARG PYTHON_VENV
 
-ENV ANSIBLE_COLLECTIONS_PATH="/usr/bin/collections"
-ENV ANSIBLE_ROLES_PATH="/usr/bin/roles"
+ENV PATH="$PATH:${PYTHON_VENV}/bin"
+ENV ANSIBLE_COLLECTIONS_PATH="${PYTHON_VENV}/bin/collections"
+ENV ANSIBLE_ROLES_PATH="${PYTHON_VENV}/bin/roles"
 
 # Install dependencies
 RUN apk add --no-cache \
-      bash=${BASH_VERSION} \
-      curl=${CURL_VERSION} \
-      gcc=${GCC_VERSION} \
-      git=${GIT_VERSION} \
-      jq=${JQ_VERSION} \
-      musl-dev=${MUSL_DEV_VERSION} \
-      openssh-client-default=${OPENSSH_CLIENT_DEFAULT_VERSION} \
-      perl=${PERL_VERSION} \
-      su-exec=${SU_EXEC_VERSION} &&\
-    # Fix git runtime fatal:
-    # unsafe repository ('/lint' is owned by someone else)
-    git config --global --add safe.directory /lint
+  bash=${BASH_VERSION} \
+  curl=${CURL_VERSION} \
+  git=${GIT_VERSION} \
+  jq=${JQ_VERSION} \
+  openssh-client-default=${OPENSSH_CLIENT_DEFAULT_VERSION} \
+  perl=${PERL_VERSION} \
+  su-exec=${SU_EXEC_VERSION} &&\
+  # Fix git runtime fatal:
+  # unsafe repository ('/lint' is owned by someone else)
+  git config --global --add safe.directory /lint
 
 # Copy tools
-## pre-commit, hooks and binaries
+## Copy binaries
 COPY --from=builder \
-    /usr/local/bin/pre-commit \
-    /usr/local/bin/ansible* \
-    /bin_dir/ \
-    /usr/local/bin/checkov* \
-    /usr/bin/
+  /bin_dir/ \
+  /usr/bin/
 
-## Copy pre-commit packages
+## Copy python packages
 COPY --from=builder \
-  /usr/local/lib/python3.12/site-packages/ \
-  /usr/local/lib/python3.12/site-packages/
+  ${PYTHON_VENV} \
+  ${PYTHON_VENV}
 
 # Add user to able to use ssh credentials
 RUN adduser -D user && \
   mkdir -p /home/user/.ssh && \
   chown -R user:user /home/user/.ssh
 
+### Copy pre-commit packages
 COPY scripts/entrypoint /entrypoint
 COPY scripts/pre-commit-custom /pre-commit-custom
 COPY scripts/pre-commit-custom /post-checkout-custom
