@@ -10,15 +10,9 @@ ARG BASH_VERSION=5.2.37-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/curl versioning=loose
 ARG CURL_VERSION=8.14.1-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/gcc versioning=loose
-ARG GCC_VERSION=14.2.0-r6
-# renovate: datasource=repology depnameprefix=alpine_3_22/git versioning=loose
 ARG GIT_VERSION=2.49.0-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
 ARG JQ_VERSION=1.8.0-r0
-# renovate: datasource=repology depnameprefix=alpine_3_22/libffi-dev versioning=loose
-ARG LIBFFI_DEV_VERSION=3.4.8-r0
-# renovate: datasource=repology depnameprefix=alpine_3_22/musl-dev versioning=loose
-ARG MUSL_DEV_VERSION=1.2.5-r10
 # renovate: datasource=repology depnameprefix=alpine_3_22/openssh-client-default versioning=loose
 ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r7
 # renovate: datasource=repology depnameprefix=alpine_3_22/perl versioning=loose
@@ -31,7 +25,7 @@ ARG PYTHON_VENV="/opt/python_venv"
 #####################################
 # Arguments
 #####################################
-ARG TAG=3.13.5-alpine22@sha256:9b4929a72599b6c6389ece4ecbf415fd1355129f22bb92bb137eea098f05e975
+ARG TAG=3.13.5-alpine3.22@sha256:9b4929a72599b6c6389ece4ecbf415fd1355129f22bb92bb137eea098f05e975
 FROM python:${TAG} AS builder
 
 ARG TARGETOS
