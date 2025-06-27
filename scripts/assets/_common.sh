@@ -3,11 +3,11 @@
 set -eo pipefail
 
 function common::usage::github_release() {
-    b="$(printf '\e[1m')"
-    u="$(printf '\e[4m')"
-    r="$(printf '\e[0m')"
+  b="$(printf '\e[1m')"
+  u="$(printf '\e[4m')"
+  r="$(printf '\e[0m')"
 
-    cat <<EOF >&2
+  cat <<EOF >&2
 ${b}NAME${r}
     ${u}Install from github release${r} - Install the latest or specific version of the tool from GitHub release.
 
@@ -43,66 +43,73 @@ EOF
 function common::install::github_release() {
 
   while [[ $# -gt 0 ]]; do
-      case "$1" in
-          -o|--github-org)
-              local GITHUB_ORG="$2";
-              shift ;;
-          -d|--distributed)
-              local DISTRIBUTED_AS="$2";
-              shift ;;
-          -l|--latest-version-regex)
-              local LATEST_VERSION_REGEX="$2";
-              shift ;;
-          -s|--specific-version-regex)
-              local SPECIFIC_VERSION_REGEX="$2";
-              shift ;;
-          -u|--unique-tool-name)
-              local UNIQUE_TOOL_NAME="$2";
-              shift ;;
-          -h|--help)
-              common::usage::github_release;
-              exit 0;;
-          *)
-              args+=("${1}") ;;
-      esac
+    case "$1" in
+    -o | --github-org)
+      local GITHUB_ORG="$2"
       shift
+      ;;
+    -d | --distributed)
+      local DISTRIBUTED_AS="$2"
+      shift
+      ;;
+    -l | --latest-version-regex)
+      local LATEST_VERSION_REGEX="$2"
+      shift
+      ;;
+    -s | --specific-version-regex)
+      local SPECIFIC_VERSION_REGEX="$2"
+      shift
+      ;;
+    -u | --unique-tool-name)
+      local UNIQUE_TOOL_NAME="$2"
+      shift
+      ;;
+    -h | --help)
+      common::usage::github_release
+      exit 0
+      ;;
+    *)
+      args+=("${1}")
+      ;;
+    esac
+    shift
   done
 
-  if [[ -z "$GITHUB_ORG" ]] || \
-   [[ -z "$DISTRIBUTED_AS" ]] || \
-   [[ -z "$LATEST_VERSION_REGEX" ]] || \
-   [[ -z "$SPECIFIC_VERSION_REGEX" ]]; then
-     common::usage::github_release
-     exit 1
+  if [[ -z "$GITHUB_ORG" ]] ||
+    [[ -z "$DISTRIBUTED_AS" ]] ||
+    [[ -z "$LATEST_VERSION_REGEX" ]] ||
+    [[ -z "$SPECIFIC_VERSION_REGEX" ]]; then
+    common::usage::github_release
+    exit 1
   fi
 
   case $DISTRIBUTED_AS in
-    tar.gz | zip)
-      local -r PACKAGE="${TOOL}.${DISTRIBUTED_AS}"
-      ;;
-    binary)
-      local -r PACKAGE="$TOOL"
-      ;;
-    *)
-      echo "Unknown DISTRIBUTED_AS: '$DISTRIBUTED_AS'. Should be one of: 'tar.gz', 'zip' or 'binary'." >&2
-      exit 1
-      ;;
+  tar.gz | zip)
+    local -r PACKAGE="${TOOL}.${DISTRIBUTED_AS}"
+    ;;
+  binary)
+    local -r PACKAGE="$TOOL"
+    ;;
+  *)
+    echo "Unknown DISTRIBUTED_AS: '$DISTRIBUTED_AS'. Should be one of: 'tar.gz', 'zip' or 'binary'." >&2
+    exit 1
+    ;;
   esac
 
   # Download tool
   local -r RELEASES="https://api.github.com/repos/${GITHUB_ORG}/${TOOL}/releases"
 
   if [ "$VERSION" == "latest" ]; then
-    curl -L "$(curl "${RELEASES}/latest" | grep -o -E -i -m 1 "$LATEST_VERSION_REGEX")" > "$PACKAGE"
+    curl -L "$(curl "${RELEASES}/latest" | grep -o -E -i -m 1 "$LATEST_VERSION_REGEX")" >"$PACKAGE"
   else
     COUNT=0
     while true; do
 
       RELEASE_PAGE="$(curl -s "$RELEASES?page=$COUNT")"
-      DOWNLOAD_URL="$(grep -o -E -i -m 1 "$SPECIFIC_VERSION_REGEX" <<< "$RELEASE_PAGE" || echo "NonExisting")"
+      DOWNLOAD_URL="$(grep -o -E -i -m 1 "$SPECIFIC_VERSION_REGEX" <<<"$RELEASE_PAGE" || echo "NonExisting")"
 
       # If there is no more GitHub release page to check the script will exit.
-      if jq -e '. == []' <<< "$RELEASE_PAGE"; then
+      if jq -e '. == []' <<<"$RELEASE_PAGE"; then
         echo "No more pages! Please check the '$TOOL' releases." >&2
         exit 1
       fi
@@ -110,11 +117,11 @@ function common::install::github_release() {
       # If the $DOWNLOAD_URL is 'NonExisting' string it downloads the $TOOL
       # otherwise will increase the $COUNT and checks the next page.
       if [ "$DOWNLOAD_URL" != "NonExisting" ]; then
-        curl -L "$DOWNLOAD_URL" > "$PACKAGE"
+        curl -L "$DOWNLOAD_URL" >"$PACKAGE"
         break
       fi
 
-      COUNT=$((COUNT+1))
+      COUNT=$((COUNT + 1))
     done
   fi
 
@@ -147,11 +154,10 @@ function common::install::github_release() {
 #######################################################################
 function common::install::pip() {
   if [ "$VERSION" == "latest" ]; then
-    pip3 install --no-cache-dir "$TOOL"
+    "${PYTHON_VENV}/bin/pip3" install --no-cache-dir "$TOOL"
   else
-    pip3 install --no-cache-dir "${TOOL}==${VERSION}"
+    "${PYTHON_VENV}/bin/pip3" install --no-cache-dir "${TOOL}==${VERSION}"
   fi
-
 }
 
 #######################################################################
@@ -166,13 +172,13 @@ function common::version() {
   if [ ! -f "$TOOLS_VERSION_FILE" ]; then
     printf "%s\n" \
       "---" \
-      "tools:" > "$TOOLS_VERSION_FILE"
+      "tools:" >"$TOOLS_VERSION_FILE"
   fi
 
   printf "%s\n" \
     "  - tool: $TOOL" \
     "    version: |" \
-    "      ${INSTALLED_TOOL_VERSION//$'\n'/$'\n      '}" >> "$TOOLS_VERSION_FILE" # Needed for the correct indentation
+    "      ${INSTALLED_TOOL_VERSION//$'\n'/$'\n      '}" >>"$TOOLS_VERSION_FILE" # Needed for the correct indentation
 }
 
 #######################################################################
