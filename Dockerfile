@@ -8,7 +8,7 @@
 # renovate: datasource=repology depnameprefix=alpine_3_22/bash versioning=loose
 ARG BASH_VERSION=5.2.37-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/curl versioning=loose
-ARG CURL_VERSION=8.14.1-r0
+ARG CURL_VERSION=8.14.1-r1
 # renovate: datasource=repology depnameprefix=alpine_3_22/git versioning=loose
 ARG GIT_VERSION=2.49.0-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
