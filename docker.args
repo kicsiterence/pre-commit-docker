@@ -21,7 +21,7 @@ TERRAGRUNT_VERSION=v0.83.2
 TFLINT_VERSION=v0.58.1
 
 # renovate: datasource=pypi depName=ansible
-ANSIBLE_VERSION=11.7.0
+ANSIBLE_VERSION=11.8.0
 
 # renovate: datasource=pypi depName=ansible-lint
 ANSIBLE_LINT_VERSION=25.6.1
