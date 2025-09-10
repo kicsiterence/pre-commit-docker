@@ -6,7 +6,7 @@ TARGETARCH=amd64
 PRE_COMMIT_VERSION=v4.3.0
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
-CHECKOV_VERSION=3.2.469
+CHECKOV_VERSION=3.2.470
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
 TERRAFORM_VERSION=v1.13.1
