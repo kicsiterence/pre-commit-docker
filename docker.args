@@ -9,7 +9,7 @@ PRE_COMMIT_VERSION=v4.3.0
 CHECKOV_VERSION=3.2.471
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
-TERRAFORM_VERSION=v1.13.2
+TERRAFORM_VERSION=v1.13.3
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-docs/terraform-docs
 TERRAFORM_DOCS_VERSION=v0.20.0
