@@ -14,7 +14,7 @@ ARG GIT_VERSION=2.49.1-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
 ARG JQ_VERSION=1.8.0-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/openssh-client-default versioning=loose
-ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r7
+ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r9
 # renovate: datasource=repology depnameprefix=alpine_3_22/perl versioning=loose
 ARG PERL_VERSION=5.40.3-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/su-exec versioning=loose
