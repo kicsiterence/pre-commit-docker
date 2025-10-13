@@ -8,7 +8,7 @@
 # renovate: datasource=repology depnameprefix=alpine_3_22/bash versioning=loose
 ARG BASH_VERSION=5.2.37-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/curl versioning=loose
-ARG CURL_VERSION=8.14.1-r1
+ARG CURL_VERSION=8.14.1-r2
 # renovate: datasource=repology depnameprefix=alpine_3_22/git versioning=loose
 ARG GIT_VERSION=2.49.1-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
@@ -25,7 +25,7 @@ ARG PYTHON_VENV="/opt/python_venv"
 #####################################
 # Arguments
 #####################################
-ARG TAG=3.13.7-alpine3.22@sha256:9ba6d8cbebf0fb6546ae71f2a1c14f6ffd2fdab83af7fa5669734ef30ad48844
+ARG TAG=3.14.0-alpine3.22@sha256:8373231e1e906ddfb457748bfc032c4c06ada8c759b7b62d9c73ec2a3c56e710
 FROM python:${TAG} AS builder
 
 ARG TARGETOS
