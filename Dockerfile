@@ -8,13 +8,13 @@
 # renovate: datasource=repology depnameprefix=alpine_3_22/bash versioning=loose
 ARG BASH_VERSION=5.2.37-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/curl versioning=loose
-ARG CURL_VERSION=8.14.1-r1
+ARG CURL_VERSION=8.14.1-r2
 # renovate: datasource=repology depnameprefix=alpine_3_22/git versioning=loose
 ARG GIT_VERSION=2.49.1-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/jq versioning=loose
-ARG JQ_VERSION=1.8.0-r0
+ARG JQ_VERSION=1.8.1-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/openssh-client-default versioning=loose
-ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r9
+ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r10
 # renovate: datasource=repology depnameprefix=alpine_3_22/perl versioning=loose
 ARG PERL_VERSION=5.40.3-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/su-exec versioning=loose
@@ -52,7 +52,7 @@ ARG JQ_VERSION
 # renovate: datasource=pypi depName=colorlog
 ARG COLORLOG_VERSION=6.9.0
 # renovate: datasource=pypi depName=pip
-ARG PIP_VERION=25.1.1
+ARG PIP_VERION=25.3
 # renovate: datasource=pypi depName=setuptools
 ARG SETUPTOOLS_VERSION=80.9.0
 
@@ -81,9 +81,8 @@ RUN apk add --no-cache \
 RUN touch /.env &&\
   /assets/pre-commit.sh &&\
   /assets/ansible.sh &&\
-  /assets/ansible-lint.sh &&\
-  /assets/ansible-galaxy.sh &&\
   /assets/checkov.sh &&\
+  /assets/ansible-lint.sh &&\
   /assets/terraform-docs.sh &&\
   /assets/terraform.sh &&\
   /assets/terragrunt.sh &&\
