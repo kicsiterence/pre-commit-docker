@@ -3,7 +3,7 @@ TARGETOS=linux
 TARGETARCH=amd64
 
 # renovate: datasource=github-releases depName=pre-commit packageName=pre-commit/pre-commit
-PRE_COMMIT_VERSION=v4.5.0
+PRE_COMMIT_VERSION=v4.5.1
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
 CHECKOV_VERSION=3.2.495
