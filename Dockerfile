@@ -25,7 +25,7 @@ ARG PYTHON_VENV="/opt/python_venv"
 #####################################
 # Arguments
 #####################################
-ARG TAG=3.14.2-alpine3.22@sha256:91859223a313a4407c239afb3a8e68bddc3dbfb0d24ddc5bdeb029136b55b150
+ARG TAG=3.14.2-alpine3.22@sha256:0c9c03e6c7909bf02b4cc69f985a58e6551d68aa2af858a19dc19da385aa7965
 FROM python:${TAG} AS builder
 
 ARG TARGETOS
