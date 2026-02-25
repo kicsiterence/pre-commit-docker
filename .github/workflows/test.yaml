@@ -9,13 +9,13 @@ jobs:
   build:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
       - name: Get changed docker related files.
         id: get_changed_files
-        uses: tj-actions/changed-files@v47.0.1
+        uses: tj-actions/changed-files@v47.0.4
         with:
           files: |
             Dockerfile
@@ -38,7 +38,7 @@ jobs:
 
       - name: Build if docker related files have changed.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@v6.19.2
         with:
           context: .
           build-args: |-
