@@ -15,10 +15,10 @@ TERRAFORM_VERSION=v1.15.8
 TERRAFORM_DOCS_VERSION=v0.24.0
 
 # renovate: datasource=github-releases depName=terragrunt packageName=gruntwork-io/terragrunt
-TERRAGRUNT_VERSION=v1.1.0
+TERRAGRUNT_VERSION=v1.1.1
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-linters/tflint
-TFLINT_VERSION=v0.63.1
+TFLINT_VERSION=v0.64.0
 
 # disabled renovate: datasource=pypi depName=ansible
 ANSIBLE_VERSION=false
