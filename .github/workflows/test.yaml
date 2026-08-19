@@ -31,53 +31,44 @@ jobs:
         if: steps.get_changed_files.outputs.any_changed == 'true'
         uses: docker/setup-buildx-action@v4.2.0
 
-      - name: Acquire builder args.
+      # Tool versions live in docker.args (keeps renovate working). Export them
+      # into the environment so the docker-bake.hcl `variable` blocks pick them up.
+      - name: Load tool versions from docker.args.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        id: get_builder_args
-        run: |
-          grep -v -e "^#" -e "^$" docker.args | \
-          while read -r line; do
-            echo "$(echo $line | cut -d "=" -f 1)=$line" >> "$GITHUB_OUTPUT";
-          done
+        run: grep -vE '^#|^$' docker.args >> "$GITHUB_ENV"
 
       # Build every published platform to verify each architecture compiles and
       # that all tool downloads resolve. A multi-platform build cannot be loaded
       # into the runner's Docker, so this step only builds (and warms the cache).
       - name: Build all platforms if docker related files have changed.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/bake-action@v7.3.0
         with:
-          context: .
-          build-args: |-
-            ${{ join(steps.get_builder_args.outputs.*, '
-            ') }}
-          platforms: linux/amd64,linux/arm64
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          source: .
+          files: docker-bake.hcl
+          targets: release
           provenance: false
-          secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          CACHE_FROM: type=gha
+          CACHE_TO: type=gha,mode=max
 
       # Load the native (amd64) image so the structure and dive tests below can
       # run against it. Reuses the cache from the step above, so it is near-instant.
       - name: Load amd64 image for tests.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/bake-action@v7.3.0
         with:
-          context: .
-          build-args: |-
-            ${{ join(steps.get_builder_args.outputs.*, '
-            ') }}
-          platforms: linux/amd64
-          push: false
+          source: .
+          files: docker-bake.hcl
+          targets: test
           load: true
-          cache-from: type=gha
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           provenance: false
-          secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          CACHE_FROM: type=gha
 
       - name: Run structure tests.
         if: steps.get_changed_files.outputs.any_changed == 'true'
