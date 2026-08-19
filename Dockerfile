@@ -78,15 +78,19 @@ RUN apk add --no-cache \
   setuptools==${SETUPTOOLS_VERSION} \
   colorlog==${COLORLOG_VERSION}
 
-RUN touch /.env &&\
-  /assets/pre-commit.sh &&\
-  /assets/ansible.sh &&\
-  /assets/checkov.sh &&\
-  /assets/ansible-lint.sh &&\
-  /assets/terraform-docs.sh &&\
-  /assets/terraform.sh &&\
-  /assets/terragrunt.sh &&\
-  /assets/tflint.sh
+# Install each tool in its own layer so that bumping a single tool's version
+# only invalidates that tool's layer (and the ones after it) instead of
+# re-downloading every tool. These binaries are COPY'd into the final image
+# from this builder stage, so the extra layers do not affect final image size.
+RUN touch /.env
+RUN /assets/pre-commit.sh
+RUN /assets/ansible.sh
+RUN /assets/checkov.sh
+RUN /assets/ansible-lint.sh
+RUN /assets/terraform-docs.sh
+RUN /assets/terraform.sh
+RUN /assets/terragrunt.sh
+RUN /assets/tflint.sh
 
 RUN cat $TOOLS_VERSION_FILE
 

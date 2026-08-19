@@ -9,13 +9,16 @@ on:
       - '!tests/**'
       - 'Dockerfile'
       - 'docker.args'
-      - 'scripts/*'
+      - 'scripts/**'
 
 jobs:
   release:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v7.0.1
+
+      - name: Set up QEMU.
+        uses: docker/setup-qemu-action@v4.2.0
 
       - name: Set up Docker Buildx.
         uses: docker/setup-buildx-action@v4.2.0
@@ -46,8 +49,10 @@ jobs:
           build-args: |-
             ${{ join(steps.get_builder_args.outputs.*, '
             ') }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
             ghcr.io/${{ github.repository }}:latest
