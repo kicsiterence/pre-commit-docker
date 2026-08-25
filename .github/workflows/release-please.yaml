@@ -1,0 +1,44 @@
+name: "Release please"
+
+# On every master push, release-please maintains a "release PR" that bumps the
+# version and CHANGELOG.md from the conventional commits. Merging that PR creates
+# a git tag + GitHub Release (with generated notes) and, in the same run, builds
+# and publishes the image tagged with that version (+ latest).
+#
+# Note: the publish job is chained via `needs`/outputs in THIS run — it does not
+# rely on the tag push to trigger a separate workflow (tags created by
+# GITHUB_TOKEN do not trigger `on: push`/`on: release`).
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  release-please:
+    runs-on: [ubuntu-latest]
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v5.0.0
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish-image:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/publish.yaml
+    with:
+      image_tag: ${{ needs.release-please.outputs.tag_name }}
+      ref: ${{ needs.release-please.outputs.tag_name }}
+    secrets: inherit
