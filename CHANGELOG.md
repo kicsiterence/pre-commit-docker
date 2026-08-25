@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.0.1...v1.1.0) (2026-08-25)
+
+
+### Features
+
+* Add cleanup and make matrix build instead of qemu ([2b4871f](https://github.com/kicsiterence/pre-commit-docker/commit/2b4871f38b1afc9f8122bce23fdd1a2b23f72aaa))
+* Add cleanup and make matrix build instead of qemu ([2b4871f](https://github.com/kicsiterence/pre-commit-docker/commit/2b4871f38b1afc9f8122bce23fdd1a2b23f72aaa))
+* Add cleanup and make matrix build instead of qemu ([8735bfd](https://github.com/kicsiterence/pre-commit-docker/commit/8735bfd74d3540d706381f74201aacab84373b70))
+* Replace qemu from test as well ([643c652](https://github.com/kicsiterence/pre-commit-docker/commit/643c652add4114edb475e2ce4eac7c6c12bd2036))
+
 ## [1.0.1](https://github.com/kicsiterence/pre-commit-docker/compare/v1.0.0...v1.0.1) (2026-08-25)
 
 
