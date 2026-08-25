@@ -2,12 +2,24 @@ name: "Build docker image"
 
 on: [pull_request]
 
+permissions:
+  contents: read
+
 env:
   IMAGE_TAG: pr-test
 
 jobs:
   build:
-    runs-on: [ubuntu-latest]
+    # Build + test each architecture on its OWN native runner — no QEMU.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -20,12 +32,15 @@ jobs:
           files: |
             Dockerfile
             docker.args
+            docker-bake.hcl
             scripts/**
             tests/*.yaml
 
-      - name: Set up QEMU.
+      - name: Compute platform pair.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/setup-qemu-action@v4.2.0
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
 
       - name: Set up Docker Buildx.
         if: steps.get_changed_files.outputs.any_changed == 'true'
@@ -37,26 +52,12 @@ jobs:
         if: steps.get_changed_files.outputs.any_changed == 'true'
         run: grep -vE '^#|^$' docker.args >> "$GITHUB_ENV"
 
-      # Build every published platform to verify each architecture compiles and
-      # that all tool downloads resolve. A multi-platform build cannot be loaded
-      # into the runner's Docker, so this step only builds (and warms the cache).
-      - name: Build all platforms if docker related files have changed.
-        if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/bake-action@v7.3.0
-        with:
-          source: .
-          files: docker-bake.hcl
-          targets: release
-          provenance: false
-        env:
-          IMAGE: ghcr.io/${{ github.repository }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          CACHE_FROM: type=gha
-          CACHE_TO: type=gha,mode=max
-
-      # Load the native (amd64) image so the structure and dive tests below can
-      # run against it. Reuses the cache from the step above, so it is near-instant.
-      - name: Load amd64 image for tests.
+      # Build the image for THIS runner's native architecture and load it, so the
+      # structure and dive tests run against a real native image. The `test` bake
+      # target has no fixed platform, so it builds the runner's arch: amd64 on
+      # ubuntu-latest, arm64 on ubuntu-24.04-arm. Cache is shared per-arch with the
+      # release builds (same layers), so PRs reuse the published image's cache.
+      - name: Build native image and load.
         if: steps.get_changed_files.outputs.any_changed == 'true'
         uses: docker/bake-action@v7.3.0
         with:
@@ -68,7 +69,8 @@ jobs:
         env:
           IMAGE: ghcr.io/${{ github.repository }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          CACHE_FROM: type=gha
+          CACHE_FROM: type=gha,scope=release-${{ env.PLATFORM_PAIR }}
+          CACHE_TO: type=gha,mode=max,scope=release-${{ env.PLATFORM_PAIR }}
 
       - name: Run structure tests.
         if: steps.get_changed_files.outputs.any_changed == 'true'
