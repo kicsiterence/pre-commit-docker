@@ -1,6 +1,7 @@
-# OS specific settings
-TARGETOS=linux
-TARGETARCH=amd64
+# NOTE: TARGETOS / TARGETARCH are intentionally NOT set here. BuildKit provides
+# them automatically per target platform (see `ARG TARGETOS` / `ARG TARGETARCH`
+# in the Dockerfile), which is what enables the multi-arch build. Hardcoding them
+# would force every platform to download the same architecture's binaries.
 
 # renovate: datasource=github-releases depName=pre-commit packageName=pre-commit/pre-commit
 PRE_COMMIT_VERSION=v4.6.2

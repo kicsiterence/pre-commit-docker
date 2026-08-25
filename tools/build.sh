@@ -46,6 +46,12 @@ if [ -z "$IMAGE_NAME" ]; then    usage
     exit 1
 fi
 
-grep -v -e "^#" -e "^$" "$DOCKER_ARG" | \
-  xargs printf -- '--build-arg %s\n' | \
-  xargs docker build --progress plain --no-cache --pull -t "$IMAGE_NAME:$IMAGE_TAG" "$GIT_DIR"
+# Export tool versions from docker.args so the docker-bake.hcl variables pick
+# them up, then build the host-arch image and load it into Docker for testing.
+set -a
+# shellcheck disable=SC1090
+. "$DOCKER_ARG"
+set +a
+
+IMAGE="$IMAGE_NAME" IMAGE_TAG="$IMAGE_TAG" \
+  docker buildx bake -f "$GIT_DIR/docker-bake.hcl" --pull --load "${BAKE_TARGET:-test}"

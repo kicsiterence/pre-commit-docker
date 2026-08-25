@@ -9,13 +9,16 @@ on:
       - '!tests/**'
       - 'Dockerfile'
       - 'docker.args'
-      - 'scripts/*'
+      - 'scripts/**'
 
 jobs:
   release:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v7.0.1
+
+      - name: Set up QEMU.
+        uses: docker/setup-qemu-action@v4.2.0
 
       - name: Set up Docker Buildx.
         uses: docker/setup-buildx-action@v4.2.0
@@ -31,26 +34,21 @@ jobs:
         run: |
           echo IMAGE_TAG=$([ ${{ github.ref_type }} == 'tag' ] && echo ${{ github.ref_name }} || echo 'latest') >> $GITHUB_ENV
 
-      - name: Acquire builder args.
-        id: get_builder_args
-        run: |
-          grep -v -e "^#" -e "^$" docker.args | \
-          while read -r line; do
-            echo "$(echo $line | cut -d "=" -f 1)=$line" >> "$GITHUB_OUTPUT";
-          done
+      # Tool versions live in docker.args (keeps renovate working). Export them
+      # into the environment so the docker-bake.hcl `variable` blocks pick them up.
+      - name: Load tool versions from docker.args.
+        run: grep -vE '^#|^$' docker.args >> "$GITHUB_ENV"
 
       - name: Build and publish.
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/bake-action@v7.3.0
         with:
-          context: .
-          build-args: |-
-            ${{ join(steps.get_builder_args.outputs.*, '
-            ') }}
-          platforms: linux/amd64
+          source: .
+          files: docker-bake.hcl
+          targets: release
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
-            ghcr.io/${{ github.repository }}:latest
           provenance: false
-          secrets: |
-            "github_token=${{ secrets.GITHUB_TOKEN }}"
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          CACHE_FROM: type=gha
+          CACHE_TO: type=gha,mode=max
