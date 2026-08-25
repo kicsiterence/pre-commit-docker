@@ -7,16 +7,16 @@
 PRE_COMMIT_VERSION=v4.6.2
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
-CHECKOV_VERSION=3.3.9
+CHECKOV_VERSION=3.3.13
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
-TERRAFORM_VERSION=v1.15.8
+TERRAFORM_VERSION=v1.15.9
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-docs/terraform-docs
 TERRAFORM_DOCS_VERSION=v0.24.0
 
 # renovate: datasource=github-releases depName=terragrunt packageName=gruntwork-io/terragrunt
-TERRAGRUNT_VERSION=v1.1.2
+TERRAGRUNT_VERSION=v1.1.3
 
 # renovate: datasource=github-releases depName=tflint packageName=terraform-linters/tflint
 TFLINT_VERSION=v0.64.0
