@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.1.0...v1.2.0) (2026-08-25)
+
+
+### Features
+
+* Upgrade digest management from v4 to v5 ([21a59f6](https://github.com/kicsiterence/pre-commit-docker/commit/21a59f65252561c5f403b1db11d72299320bae2c))
+* Upgrade digest management from v4 to v5 ([289c02b](https://github.com/kicsiterence/pre-commit-docker/commit/289c02bfcaedd91f37775a2c1b8842765d5dfc25))
+
 ## [1.1.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.0.1...v1.1.0) (2026-08-25)
 
 
