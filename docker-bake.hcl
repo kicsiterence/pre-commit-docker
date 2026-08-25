@@ -8,13 +8,21 @@
 #   docker buildx bake release        # multi-arch, ready to --push
 #   docker buildx bake test           # single-arch, ready to --load for tests
 #
-variable "IMAGE" { default = "ghcr.io/kicsiterence/pre-commit-docker" }
-variable "IMAGE_TAG" { default = "latest" }
+variable "IMAGE" {
+  default = "ghcr.io/kicsiterence/pre-commit-docker"
+}
+variable "IMAGE_TAG" {
+  default = "latest"
+}
 
 # Cache backends default to empty so local builds work without a cache backend.
 # CI sets them to `type=gha` / `type=gha,mode=max` via the environment.
-variable "CACHE_FROM" { default = "" }
-variable "CACHE_TO" { default = "" }
+variable "CACHE_FROM" {
+  default = ""
+}
+variable "CACHE_TO" {
+  default = ""
+}
 
 # Sourced from docker.args (no defaults — bake reads them from the environment).
 variable "PRE_COMMIT_VERSION" {}
