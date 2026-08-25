@@ -29,7 +29,7 @@ jobs:
 
       - name: Set up Docker Buildx.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/setup-buildx-action@v4.2.0
+        uses: docker/setup-buildx-action@v4.3.0
 
       # Tool versions live in docker.args (keeps renovate working). Export them
       # into the environment so the docker-bake.hcl `variable` blocks pick them up.
