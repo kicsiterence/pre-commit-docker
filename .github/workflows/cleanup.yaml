@@ -1,0 +1,44 @@
+name: "Cleanup GHCR images"
+
+# Weekly prune of old container image versions in the GHCR package.
+# Policy: keep :latest and the 10 most recent version tags; delete older tagged
+# versions; safely remove untagged digests that are NOT children of a retained
+# multi-arch image (this action is manifest-list aware, so it will not orphan the
+# amd64/arm64 manifests of kept tags — `validate` double-checks integrity after).
+#
+# SAFETY: this starts in DRY-RUN. Trigger it manually (Run workflow) and review
+# the log of what it WOULD delete. When you are happy, change the `|| 'true'`
+# fallback below to `|| 'false'` to let the scheduled run actually delete.
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # Mondays 03:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Only log what would be deleted (no deletion)."
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune old image versions.
+        uses: dataaxiom/ghcr-cleanup-action@v1.2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          package: ${{ github.event.repository.name }}
+          # Keep the 10 newest version tags; :latest is always excluded from deletion.
+          keep-n-tagged: 10
+          exclude-tags: latest
+          # Remove untagged digests that no retained image references.
+          delete-untagged: true
+          delete-partial-images: true
+          # Verify remaining multi-arch images are still intact afterwards.
+          validate: true
+          # Scheduled runs are dry until you flip 'true' -> 'false' below.
+          dry-run: ${{ github.event.inputs.dry-run || 'true' }}

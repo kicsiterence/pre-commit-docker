@@ -1,15 +1,18 @@
 name: "Release - build"
 
-# Publishing is driven by releases (see release-please.yaml), which calls this
-# workflow with the version tag. It can also be dispatched manually to rebuild
-# `latest` from the current branch (e.g. after a base-image CVE with no code
-# change). It no longer runs on every master push — the image ships on release.
+# Reusable build/publish. Each architecture is built on its OWN native runner
+# (amd64 on ubuntu-latest, arm64 on ubuntu-24.04-arm) — NO QEMU emulation — then
+# pushed by digest and merged into one multi-arch manifest list, tagged per the
+# docker-bake.hcl `release` target (:vX.Y.Z + :latest).
+#
+# Called by release-please.yaml on a release (image_tag=vX.Y.Z). Can also be
+# dispatched manually to rebuild :latest from a branch.
 on:
   workflow_dispatch:
   workflow_call:
     inputs:
       image_tag:
-        description: "Image tag to publish (defaults to 'latest')."
+        description: "Version tag for the release (defaults to 'latest')."
         type: string
         required: false
         default: latest
@@ -23,16 +26,33 @@ permissions:
   contents: read
   packages: write
 
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+  # Keep exactly one image manifest per digest (suppress provenance/SBOM
+  # attestation manifests) so `imagetools create` can assemble the list from
+  # plain per-arch digests.
+  BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
+
 jobs:
-  release:
-    runs-on: [ubuntu-latest]
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     steps:
+      - name: Compute platform pair.
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ inputs.ref }}
-
-      - name: Set up QEMU.
-        uses: docker/setup-qemu-action@v4.2.0
 
       - name: Set up Docker Buildx.
         uses: docker/setup-buildx-action@v4.3.0
@@ -49,16 +69,78 @@ jobs:
       - name: Load tool versions from docker.args.
         run: grep -vE '^#|^$' docker.args >> "$GITHUB_ENV"
 
-      - name: Build and publish.
-        uses: docker/bake-action@v7.3.0
-        with:
-          source: .
-          files: docker-bake.hcl
-          targets: release
-          push: true
-          provenance: false
+      # Build ONE architecture natively and push it by digest (no tags — the tags
+      # are applied to the merged manifest in the `merge` job).
+      - name: Build and push by digest.
+        id: build
         env:
-          IMAGE: ghcr.io/${{ github.repository }}
           IMAGE_TAG: ${{ inputs.image_tag || 'latest' }}
-          CACHE_FROM: type=gha
-          CACHE_TO: type=gha,mode=max
+          CACHE_FROM: type=gha,scope=release-${{ env.PLATFORM_PAIR }}
+          CACHE_TO: type=gha,mode=max,scope=release-${{ env.PLATFORM_PAIR }}
+        run: |
+          docker buildx bake -f docker-bake.hcl \
+            --set "*.platform=${{ matrix.platform }}" \
+            --set "*.tags=" \
+            --set "*.output=type=image,name=${IMAGE},push-by-digest=true,name-canonical=true,push=true" \
+            --metadata-file /tmp/bake-meta.json \
+            release
+          digest="$(jq -r '.[]["containerimage.digest"]' /tmp/bake-meta.json | head -n1)"
+          test -n "$digest"
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest.
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Download digests.
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx.
+        uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tags stay defined in docker-bake.hcl (single source of truth); read them back.
+      - name: Resolve tags from bake target.
+        id: tags
+        env:
+          IMAGE_TAG: ${{ inputs.image_tag || 'latest' }}
+        run: |
+          tags="$(docker buildx bake -f docker-bake.hcl release --print 2>/dev/null \
+            | jq -r '.target[].tags[]' | sort -u)"
+          test -n "$tags"
+          echo "$tags"
+          echo "args=$(printf -- '-t %s ' $tags)" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push manifest list.
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create ${{ steps.tags.outputs.args }} \
+            $(printf "${IMAGE}@sha256:%s " *)
+
+      - name: Inspect.
+        run: |
+          tag="$(printf '%s' '${{ steps.tags.outputs.args }}' | awk '{print $2}')"
+          docker buildx imagetools inspect "$tag"
