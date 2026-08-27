@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.0...v1.2.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **deps:** update docker/setup-buildx-action action to v4.3.0 ([#156](https://github.com/kicsiterence/pre-commit-docker/issues/156)) ([4482f19](https://github.com/kicsiterence/pre-commit-docker/commit/4482f19dcbf1bbc3595ebdeb6f7f00000ef7f7b7))
+
 ## [1.2.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.1.0...v1.2.0) (2026-08-25)
 
 
