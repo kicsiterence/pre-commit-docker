@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.1...v1.2.2) (2026-08-27)
+
+
+### Bug Fixes
+
+* **deps:** update github artifact actions (major) ([#157](https://github.com/kicsiterence/pre-commit-docker/issues/157)) ([aa7d9db](https://github.com/kicsiterence/pre-commit-docker/commit/aa7d9dbe51286beb652872479a6698a4d5e8df81))
+
 ## [1.2.1](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.0...v1.2.1) (2026-08-27)
 
 
