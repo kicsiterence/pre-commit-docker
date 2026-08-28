@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.2...v1.3.0) (2026-08-28)
+
+
+### Features
+
+* Shrink size via UPX ([#155](https://github.com/kicsiterence/pre-commit-docker/issues/155)) ([6629ce9](https://github.com/kicsiterence/pre-commit-docker/commit/6629ce909caf3f8b87a12e83a00a69fcd6bdeef3))
+
 ## [1.2.2](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.1...v1.2.2) (2026-08-27)
 
 
