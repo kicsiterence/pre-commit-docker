@@ -3,5 +3,16 @@
   "extends": [
     "github>kicsiterence/renovate"
   ],
-  "semanticCommitType": "fix"
+  "semanticCommitType": "fix",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update inline `# renovate:`-annotated *_VERSION vars in workflow files",
+      "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\s+[A-Z_]+: [\"']?(?<currentValue>[^\"'\\s]+)"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
+  ]
 }

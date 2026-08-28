@@ -7,6 +7,8 @@ permissions:
 
 env:
   IMAGE_TAG: pr-test
+  # renovate: datasource=github-releases depName=GoogleContainerTools/container-structure-test
+  CST_VERSION: v1.22.1
 
 jobs:
   build:
@@ -72,12 +74,24 @@ jobs:
           CACHE_FROM: type=gha,scope=release-${{ env.PLATFORM_PAIR }}
           CACHE_TO: type=gha,mode=max,scope=release-${{ env.PLATFORM_PAIR }}
 
+      # Run container-structure-test directly (arch-aware) instead of via the
+      # plexsystems action: that action is a Docker action hardcoded to amd64 and
+      # fails on the arm64 runner. The CST binary ships both arches.
       - name: Run structure tests.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: plexsystems/container-structure-test-action@v0.3.0
-        with:
-          image: ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
-          config: tests/container-structure-test.yaml
+        run: |
+          arch="$(uname -m)"
+          case "$arch" in
+            x86_64) arch=amd64 ;;
+            aarch64) arch=arm64 ;;
+          esac
+          bin="$RUNNER_TEMP/container-structure-test"
+          curl -fsSL -o "$bin" \
+            "https://github.com/GoogleContainerTools/container-structure-test/releases/download/${CST_VERSION}/container-structure-test-linux-${arch}"
+          chmod +x "$bin"
+          "$bin" test \
+            --image ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }} \
+            --config tests/container-structure-test.yaml
 
       - name: Dive - check image for waste files.
         if: steps.get_changed_files.outputs.any_changed == 'true'
