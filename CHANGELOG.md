@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.3.0...v1.4.0) (2026-08-28)
+
+
+### Features
+
+* Add small fixes and improvements ([#161](https://github.com/kicsiterence/pre-commit-docker/issues/161)) ([01925ed](https://github.com/kicsiterence/pre-commit-docker/commit/01925edfa7474b34250c842418171c0ad1538ffd))
+
 ## [1.3.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.2.2...v1.3.0) (2026-08-28)
 
 
