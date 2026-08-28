@@ -19,6 +19,8 @@ ARG OPENSSH_CLIENT_DEFAULT_VERSION=10.0_p1-r10
 ARG PERL_VERSION=5.40.4-r0
 # renovate: datasource=repology depnameprefix=alpine_3_22/su-exec versioning=loose
 ARG SU_EXEC_VERSION=0.2-r3
+# renovate: datasource=repology depnameprefix=alpine_3_22/upx versioning=loose
+ARG UPX_VERSION=5.0.2-r0
 
 ARG PYTHON_VENV="/opt/python_venv"
 
@@ -48,6 +50,7 @@ ARG ANSIBLE_LINT_VERSION=${ANSIBLE_LINT_VERSION:-false}
 ARG BASH_VERSION
 ARG CURL_VERSION
 ARG JQ_VERSION
+ARG UPX_VERSION
 
 # renovate: datasource=pypi depName=colorlog
 ARG COLORLOG_VERSION=6.9.0
@@ -72,7 +75,8 @@ RUN python3 -m venv ${PYTHON_VENV}
 RUN apk add --no-cache \
   bash=${BASH_VERSION} \
   curl=${CURL_VERSION} \
-  jq=${JQ_VERSION} && \
+  jq=${JQ_VERSION} \
+  upx=${UPX_VERSION} && \
   ${PYTHON_VENV}/bin/pip3 install --no-cache-dir --upgrade \
   pip==${PIP_VERION} \
   setuptools==${SETUPTOOLS_VERSION} \
@@ -91,6 +95,15 @@ RUN /assets/terraform-docs.sh
 RUN /assets/terraform.sh
 RUN /assets/terragrunt.sh
 RUN /assets/tflint.sh
+
+# Compress the Go tool binaries to shrink the final image (~200MB smaller: the
+# four binaries go from ~250MB to ~48MB). Only the Go tools are packed
+# (pre-commit/checkov are Python); any tool not installed is skipped. upx runs in
+# the builder only, so it never lands in the final image. Trade-off: ~0.1-0.3s of
+# decompression per invocation, negligible for pre-commit usage.
+RUN for b in terraform tflint terragrunt terraform-docs; do \
+      if [ -f "/bin_dir/${b}" ]; then upx --best --lzma "/bin_dir/${b}"; fi; \
+    done
 
 RUN cat $TOOLS_VERSION_FILE
 
