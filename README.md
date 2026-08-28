@@ -139,6 +139,14 @@ You can pull docker image locally.
 docker pull ghcr.io/kicsiterence/pre-commit-docker:latest
 ```
 
+The image is multi-arch (`linux/amd64` and `linux/arm64`), so docker pulls the matching one for your machine automatically.
+
+Besides `latest`, every release is published under its version tag as well, for example:
+
+```sh
+docker pull ghcr.io/kicsiterence/pre-commit-docker:v1.3.0
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE -->
@@ -156,8 +164,8 @@ Nothing unordanary should be done, just simple follow the git workflow as you di
 <!-- ROADMAP -->
 ## Roadmap
 
-- [] Add changelog
-- [] Add proper releases
+- [x] Add changelog
+- [x] Add proper releases
 
 See the [open issues](https://github.com/kicsiterence/pre-commit-docker/issues) for a full list of proposed features (and known issues).
 

@@ -100,7 +100,7 @@ function common::install::github_release() {
   local -r RELEASES="https://api.github.com/repos/${GITHUB_ORG}/${TOOL}/releases"
 
   if [ "$VERSION" == "latest" ]; then
-    curl -L "$(curl "${RELEASES}/latest" | grep -o -E -i -m 1 "$LATEST_VERSION_REGEX")" >"$PACKAGE"
+    curl -fL "$(curl "${RELEASES}/latest" | grep -o -E -i -m 1 "$LATEST_VERSION_REGEX")" >"$PACKAGE"
   else
     COUNT=0
     while true; do
@@ -117,7 +117,7 @@ function common::install::github_release() {
       # If the $DOWNLOAD_URL is 'NonExisting' string it downloads the $TOOL
       # otherwise will increase the $COUNT and checks the next page.
       if [ "$DOWNLOAD_URL" != "NonExisting" ]; then
-        curl -L "$DOWNLOAD_URL" >"$PACKAGE"
+        curl -fL "$DOWNLOAD_URL" >"$PACKAGE"
         break
       fi
 

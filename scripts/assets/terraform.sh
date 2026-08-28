@@ -16,7 +16,7 @@ fi
 
 readonly UNIQUE_VERSION
 
-curl -L "https://releases.hashicorp.com/terraform/${UNIQUE_VERSION}/${TOOL}_${UNIQUE_VERSION}_${TARGETOS}_${TARGETARCH}.zip" > "${TOOL}.zip"
+curl -fL "https://releases.hashicorp.com/terraform/${UNIQUE_VERSION}/${TOOL}_${UNIQUE_VERSION}_${TARGETOS}_${TARGETARCH}.zip" > "${TOOL}.zip"
 unzip "${TOOL}.zip" "$TOOL"
 rm "${TOOL}.zip"
 
