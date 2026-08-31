@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.0...v1.4.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#163](https://github.com/kicsiterence/pre-commit-docker/issues/163)) ([e7b73af](https://github.com/kicsiterence/pre-commit-docker/commit/e7b73af73b534207b2ecf4582fc3c844fcfc467d))
+
 ## [1.4.0](https://github.com/kicsiterence/pre-commit-docker/compare/v1.3.0...v1.4.0) (2026-08-28)
 
 
