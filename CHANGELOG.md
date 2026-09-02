@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.1...v1.4.2) (2026-09-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency alpine_3_22/jq to v1.8.2-r0 ([#165](https://github.com/kicsiterence/pre-commit-docker/issues/165)) ([3dc605f](https://github.com/kicsiterence/pre-commit-docker/commit/3dc605f1d188f3b0bb9e464f88afff7625cfd90b))
+
 ## [1.4.1](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.0...v1.4.1) (2026-08-31)
 
 
