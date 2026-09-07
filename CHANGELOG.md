@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.2...v1.4.3) (2026-09-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency terraform to v1.16.1 ([#167](https://github.com/kicsiterence/pre-commit-docker/issues/167)) ([b16b6c1](https://github.com/kicsiterence/pre-commit-docker/commit/b16b6c1d80158fa2d3cd08c14aec0a561d375376))
+
 ## [1.4.2](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.1...v1.4.2) (2026-09-02)
 
 
