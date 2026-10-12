@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.8](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.7...v1.4.8) (2026-10-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency checkov to v3.3.27 ([#177](https://github.com/kicsiterence/pre-commit-docker/issues/177)) ([6ea9cfd](https://github.com/kicsiterence/pre-commit-docker/commit/6ea9cfddfaafed4b73aeee2b4501c5e4b630b261))
+
 ## [1.4.7](https://github.com/kicsiterence/pre-commit-docker/compare/v1.4.6...v1.4.7) (2026-10-07)
 
 
