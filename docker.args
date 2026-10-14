@@ -4,10 +4,10 @@
 # would force every platform to download the same architecture's binaries.
 
 # renovate: datasource=github-releases depName=pre-commit packageName=pre-commit/pre-commit
-PRE_COMMIT_VERSION=v4.6.2
+PRE_COMMIT_VERSION=v4.7.0
 
 # renovate: datasource=github-releases depName=checkov packageName=bridgecrewio/checkov
-CHECKOV_VERSION=3.3.27
+CHECKOV_VERSION=3.3.29
 
 # renovate: datasource=github-releases depName=terraform packageName=hashicorp/terraform
 TERRAFORM_VERSION=v1.16.5
