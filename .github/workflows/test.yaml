@@ -66,7 +66,7 @@ jobs:
       # release builds (same layers), so PRs reuse the published image's cache.
       - name: Build native image and load.
         if: steps.get_changed_files.outputs.any_changed == 'true'
-        uses: docker/bake-action@v7.4.0
+        uses: docker/bake-action@v7.5.0
         with:
           source: .
           files: docker-bake.hcl
