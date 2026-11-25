@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prune old image versions.
-        uses: dataaxiom/ghcr-cleanup-action@v1.2.2
+        uses: dataaxiom/ghcr-cleanup-action@v1.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           package: ${{ github.event.repository.name }}
